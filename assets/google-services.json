@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "117130446993",
+    "project_id": "vaultgate-99297",
+    "storage_bucket": "vaultgate-99297.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:117130446993:android:f81cf604b62499fc171730",
+        "android_client_info": {
+          "package_name": "com.vaultgate.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhw-fvgbtQ2wrpZs-fPY2kMt65iKW32Eg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

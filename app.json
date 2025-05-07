@@ -15,7 +15,9 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.vaultgate.app",
+      "googleServicesFile": "./assets/google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -30,9 +32,13 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#ff0000"
         }
-      ]
+      ],
+      "expo-camera",
+      "expo-font",
+      "@react-native-firebase/app",
+      "@react-native-firebase/auth",
     ],
     "experiments": {
       "typedRoutes": true
