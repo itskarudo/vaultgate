@@ -142,8 +142,15 @@ const MembersListItem = ({
   const switchAdminHandler = async () => {
     if (!user) return;
     const userDoc = doc(firestore, "orgs", org.id, "users", entry.id);
+
+    const filteredPinnedLocks = entry.pinnedLocks.filter(
+      (lockId) => !entry.allowedLocks.includes(lockId)
+    );
+
     await updateDoc(userDoc, {
       role: entry.role === "admin" ? "member" : "admin",
+      pinnedLocks:
+        entry.role === "member" ? filteredPinnedLocks : entry.pinnedLocks,
     });
 
     ref.current?.close();

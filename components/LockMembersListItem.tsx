@@ -18,7 +18,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import {
   arrayRemove,
-  deleteDoc,
   doc,
   getFirestore,
   updateDoc,

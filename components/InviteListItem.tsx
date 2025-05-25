@@ -54,7 +54,6 @@ const InviteListItem = ({ entry }: InviteListItemProps) => {
       role: "member",
       allowedLocks: [],
       pinnedLocks: [],
-      dismissedLogs: [],
       createdAt: new Date(),
     });
 

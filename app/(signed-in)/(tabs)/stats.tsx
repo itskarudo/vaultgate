@@ -1,22 +1,38 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Button } from "react-native";
 import { Link } from "expo-router";
 import LockListItem from "@/components/LockListItem";
 import HistoryListItem from "@/components/HistoryListItem";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCircleExclamation } from "@fortawesome/free-solid-svg-icons/faCircleExclamation";
 import FailedAttemptListItem from "@/components/FailedAttemptListItem";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { useCurrentOrg } from "@/stores/orgsStore";
 import { useLocks } from "@/stores/locksStore";
 import NoCurrentOrg from "@/components/NoCurrentOrg";
 import { useOrgUser } from "@/stores/orgUsersStore";
 import { useLogs } from "@/stores/logStore";
+import ClaimSheet, { ClaimSheetMethods } from "@/components/ClaimSheet";
+import {
+  BottomSheetModal,
+  BottomSheetModalProvider,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
 
 const Stats = () => {
   const currentOrg = useCurrentOrg();
 
   const locks = useLocks();
   const orgUser = useOrgUser();
+
+  const bottomSheetModalRef = useRef<ClaimSheetMethods>(null);
+
+  const claimHandler = async (
+    logId: string,
+    lockData: string,
+    method: "rfid" | "fingerprint"
+  ) => {
+    bottomSheetModalRef.current?.present(logId, lockData, method);
+  };
 
   const pinnedLocks = useMemo(
     () => locks.filter((lock) => orgUser?.pinnedLocks.includes(lock.id)),
@@ -55,21 +71,11 @@ const Stats = () => {
                 Failed Attempts
               </Text>
             </View>
-            <TouchableOpacity
-              activeOpacity={0.8}
-              className="bg-red-500 px-4 py-2 rounded-xl shadow-md"
-            >
-              <Text className="text-white text-sm font-poppins-medium">
-                Clear all
-              </Text>
-            </TouchableOpacity>
           </View>
           {failedLogs.map((entry) => (
             <FailedAttemptListItem
               entry={entry}
-              onClear={(entry) => {
-                // setHistory((prev) => prev.filter((h) => h.id !== entry.id));
-              }}
+              claimHandler={claimHandler}
               key={entry.id}
             />
           ))}
@@ -127,6 +133,7 @@ const Stats = () => {
           </>
         )}
       </View>
+      <ClaimSheet ref={bottomSheetModalRef} />
     </ScrollView>
   );
 };

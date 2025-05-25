@@ -100,7 +100,6 @@ const LockSettings = () => {
             activeOpacity={0.8}
             className="bg-indigo-500 text-white p-3 rounded-xl aspect-square shadow-md font-poppins-medium"
             onPress={() => {
-              debugger;
               sheetRef.current?.present();
             }}
           >

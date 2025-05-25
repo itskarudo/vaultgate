@@ -10,6 +10,7 @@ import Input from "@/components/Input";
 import { useContext, useState } from "react";
 import { getAuth } from "@react-native-firebase/auth";
 import { authContext } from "@/contexts/authContext";
+import { formatError } from "@/lib/formatError";
 
 export default function Index() {
   const auth = getAuth();
@@ -20,12 +21,14 @@ export default function Index() {
   const [isEmailErrored, setIsEmailErrored] = useState(false);
   const [isPasswordErrored, setIsPasswordErrored] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (user) return <Redirect href="/stats" />;
 
   const submitHandler = async () => {
     setIsEmailErrored(false);
     setIsPasswordErrored(false);
+    setErrorMessage(null);
 
     if (email == "") {
       setIsEmailErrored(true);
@@ -41,19 +44,22 @@ export default function Index() {
     try {
       await auth.signInWithEmailAndPassword(email, password);
     } catch (e: any) {
-      console.log(e);
+      setErrorMessage(formatError(e.message));
       switch (e.code) {
         case "auth/invalid-email":
         case "auth/user-not-found":
         case "auth/user-disabled": {
           setIsEmailErrored(true);
+          break;
         }
         case "auth/wrong-password": {
           setIsPasswordErrored(true);
+          break;
         }
         case "auth/invalid-credential": {
           setIsEmailErrored(true);
           setIsPasswordErrored(true);
+          break;
         }
       }
     } finally {
@@ -68,6 +74,11 @@ export default function Index() {
           <Text className="mb-6 text-2xl text-neutral-700 font-poppins-semibold">
             Sign in to VaultGate
           </Text>
+          {errorMessage && (
+            <Text className="text-red-500 font-poppins-medium mb-6 text-sm">
+              {errorMessage}
+            </Text>
+          )}
           <View className="w-full gap-8">
             <Input
               label="Email"

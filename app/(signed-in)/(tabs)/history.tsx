@@ -19,11 +19,7 @@ const HistoryPage = () => {
       <View className="mb-24">
         {logs.map((log) =>
           log.failed ? (
-            <FailedAttemptListItem
-              entry={log}
-              key={log.id}
-              onClear={() => {}}
-            />
+            <FailedAttemptListItem entry={log} key={log.id} />
           ) : (
             <HistoryListItem entry={log} key={log.id} />
           )

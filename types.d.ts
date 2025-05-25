@@ -6,6 +6,18 @@ export interface User {
   email: string;
 }
 
+export interface RFID {
+  id: string;
+  name: string;
+  data: string;
+}
+
+export interface Fingerprint {
+  id: string;
+  name: string;
+  data: string;
+}
+
 export interface Organization {
   id: string;
   members: string[];
@@ -18,7 +30,6 @@ export interface OrgUser {
   role: "admin" | "member";
   allowedLocks: string[];
   pinnedLocks: string[];
-  dismissedLogs: string[];
   createdAt: Date;
 }
 
@@ -50,10 +61,18 @@ export type Log = {
       failed: false;
       userId: string;
       userDisplayName: string;
-      method: "phone" | "fingerprint" | "rfid";
+      method: "fingerprint" | "rfid";
+      data: string;
+    }
+  | {
+      failed: false;
+      userId: string;
+      userDisplayName: string;
+      method: "phone";
     }
   | {
       failed: true;
       method: "fingerprint" | "rfid";
+      data: string;
     }
 );

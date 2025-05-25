@@ -45,21 +45,27 @@ const Layout = () => {
       where("members", "array-contains", user.id)
     );
 
-    const unsub = onSnapshot(q, (snapshot) => {
-      let fetchedOrgs: Organization[] = [];
+    const unsub = onSnapshot(
+      q,
+      (snapshot) => {
+        let fetchedOrgs: Organization[] = [];
 
-      snapshot.forEach((doc) => {
-        fetchedOrgs.push({ ...doc.data(), id: doc.id } as Organization);
-      });
+        snapshot.forEach((doc) => {
+          fetchedOrgs.push({ ...doc.data(), id: doc.id } as Organization);
+        });
 
-      setOrgs(fetchedOrgs);
+        setOrgs(fetchedOrgs);
 
-      setCurrentOrg((prev) => {
-        if (prev === null) return fetchedOrgs[0] || null;
-        const org = fetchedOrgs.find((org) => org.id === prev.id);
-        return org || fetchedOrgs[0] || null;
-      });
-    });
+        setCurrentOrg((prev) => {
+          if (prev === null) return fetchedOrgs[0] || null;
+          const org = fetchedOrgs.find((org) => org.id === prev.id);
+          return org || fetchedOrgs[0] || null;
+        });
+      },
+      (e) => {
+        console.log("orgs failed", e);
+      }
+    );
 
     return unsub;
   }, [user]);
@@ -73,12 +79,18 @@ const Layout = () => {
     if (!currentOrg) return;
     const userDoc = doc(firestore, "orgs", currentOrg.id, "users", user.id);
 
-    const unsub = onSnapshot(userDoc, (doc) => {
-      const data = doc.data();
-      if (!data) return;
+    const unsub = onSnapshot(
+      userDoc,
+      (doc) => {
+        const data = doc.data();
+        if (!data) return;
 
-      setOrgUser({ ...data, id: doc.id } as OrgUser);
-    });
+        setOrgUser({ ...data, id: doc.id } as OrgUser);
+      },
+      (e) => {
+        console.log("org user failed", e);
+      }
+    );
 
     return unsub;
   }, [user, currentOrg]);
@@ -92,14 +104,20 @@ const Layout = () => {
     const q = query(
       collection(firestore, "orgs", currentOrg.id as string, "users")
     );
-    const unsub = onSnapshot(q, (snapshot) => {
-      const usersData: OrgUser[] = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as OrgUser[];
+    const unsub = onSnapshot(
+      q,
+      (snapshot) => {
+        const usersData: OrgUser[] = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as OrgUser[];
 
-      setOrgUsers(usersData);
-    });
+        setOrgUsers(usersData);
+      },
+      (e) => {
+        console.log("org users failed", e);
+      }
+    );
 
     return unsub;
   }, [currentOrg]);
@@ -114,20 +132,27 @@ const Layout = () => {
 
     const q = query(
       collection(firestore, "orgs", currentOrg?.id, "locks"),
+
       orgUser.role === "member"
         ? where("allowedMembers", "array-contains", user.id)
         : undefined
     );
 
-    const unsub = onSnapshot(q, (snapshot) => {
-      const locksList: Lock[] = [];
+    const unsub = onSnapshot(
+      q,
+      (snapshot) => {
+        const locksList: Lock[] = [];
 
-      snapshot.forEach((doc) => {
-        locksList.push({ ...doc.data(), id: doc.id } as Lock);
-      });
+        snapshot.forEach((doc) => {
+          locksList.push({ ...doc.data(), id: doc.id } as Lock);
+        });
 
-      setLocks(locksList);
-    });
+        setLocks(locksList);
+      },
+      (e) => {
+        console.log("locks failed", e);
+      }
+    );
 
     return unsub;
   }, [user, currentOrg, orgUser]);
@@ -143,15 +168,21 @@ const Layout = () => {
       where("inviteeEmail", "==", user.email)
     );
 
-    const unsub = onSnapshot(q, (snapshot) => {
-      const invitesList: any[] = [];
+    const unsub = onSnapshot(
+      q,
+      (snapshot) => {
+        const invitesList: any[] = [];
 
-      snapshot.forEach((doc) => {
-        invitesList.push({ ...doc.data(), id: doc.id });
-      });
+        snapshot.forEach((doc) => {
+          invitesList.push({ ...doc.data(), id: doc.id });
+        });
 
-      setInvites(invitesList);
-    });
+        setInvites(invitesList);
+      },
+      (e) => {
+        console.log("invites failed", e);
+      }
+    );
 
     return unsub;
   }, [user]);
@@ -176,15 +207,22 @@ const Layout = () => {
         : undefined
     );
 
-    const unsub = onSnapshot(q, (snapshot) => {
-      const logsList: Log[] = [];
+    const unsub = onSnapshot(
+      q,
+      (snapshot) => {
+        if (!snapshot) return;
+        const logsList: Log[] = [];
 
-      snapshot.forEach((doc) => {
-        logsList.push({ ...doc.data(), id: doc.id } as Log);
-      });
+        snapshot.forEach((doc) => {
+          logsList.push({ ...doc.data(), id: doc.id } as Log);
+        });
 
-      setLogs(logsList);
-    });
+        setLogs(logsList);
+      },
+      (e) => {
+        console.log("invites failed", e);
+      }
+    );
 
     return unsub;
   }, [user, currentOrg, orgUser]);

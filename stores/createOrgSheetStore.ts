@@ -6,7 +6,7 @@ interface CreateOrgSheetStore {
   ref: React.RefObject<BottomSheetMethods> | null;
 }
 
-const useCreateOrgSheetStore = create<CreateOrgSheetStore>((set) => ({
+const useCreateOrgSheetStore = create<CreateOrgSheetStore>(() => ({
   ref: createRef<BottomSheetMethods>(),
 }));
 

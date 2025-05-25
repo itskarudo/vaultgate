@@ -56,7 +56,6 @@ const CreateOrgSheet = forwardRef<BottomSheet>((_, ref) => {
         role: "admin",
         allowedLocks: [],
         pinnedLocks: [],
-        dismissedLogs: [],
         createdAt: new Date(),
       });
 
