@@ -4,6 +4,8 @@ export interface User {
   id: string;
   displayName: string;
   email: string;
+  rfids: string[];
+  fingerprints: string[];
 }
 
 export interface RFID {

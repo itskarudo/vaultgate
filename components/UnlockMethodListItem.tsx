@@ -11,7 +11,13 @@ import Animated, {
 import { faTrashAlt } from "@fortawesome/free-solid-svg-icons/faTrashAlt";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { Fingerprint, RFID } from "@/types";
-import { deleteDoc, doc, getFirestore } from "@react-native-firebase/firestore";
+import {
+  arrayRemove,
+  deleteDoc,
+  doc,
+  getFirestore,
+  updateDoc,
+} from "@react-native-firebase/firestore";
 import { useOrgUser } from "@/stores/orgUsersStore";
 
 type UnlockMethodListItemProps =
@@ -42,6 +48,9 @@ const UnlockMethodListItem = ({ type, entry }: UnlockMethodListItemProps) => {
     try {
       const docRef = doc(firestore, "users", user.id, type + "s", entry.id);
       await deleteDoc(docRef);
+      await updateDoc(doc(firestore, "users", user.id), {
+        [`${type}s`]: arrayRemove(entry.data),
+      });
     } catch (e) {
       console.log("huh");
     }

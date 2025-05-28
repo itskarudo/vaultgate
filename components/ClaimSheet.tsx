@@ -7,7 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import BottomSheet, {
+import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetView,
@@ -20,14 +20,14 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDocs,
   getFirestore,
-  setDoc,
+  query,
   updateDoc,
+  where,
+  writeBatch,
 } from "@react-native-firebase/firestore";
-import {
-  BottomSheetMethods,
-  BottomSheetModalMethods,
-} from "@gorhom/bottom-sheet/lib/typescript/types";
+import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 import { useCurrentOrg } from "@/stores/orgsStore";
 
 const renderBackdrop = (props: any) => (
@@ -92,9 +92,14 @@ const ClaimSheet = forwardRef<ClaimSheetMethods>((_, ref) => {
     try {
       if (method === "rfid") {
         const rfids = collection(firestore, "users", user.id, "rfids");
+
         await addDoc(rfids, {
           name: name.trim(),
           data: lockData,
+        });
+
+        await updateDoc(doc(firestore, "users", user.id), {
+          rfids: arrayUnion(lockData),
         });
       } else {
         const fingerprints = collection(
@@ -103,19 +108,31 @@ const ClaimSheet = forwardRef<ClaimSheetMethods>((_, ref) => {
           user.id,
           "fingerprints"
         );
+
         await addDoc(fingerprints, {
           name: name.trim(),
           data: lockData,
         });
+
+        await updateDoc(doc(firestore, "users", user.id), {
+          fingerprints: arrayUnion(lockData),
+        });
       }
 
-      const logDocRef = doc(firestore, "orgs", currentOrg.id, "logs", logId);
+      const q = query(
+        collection(firestore, "orgs", currentOrg.id, "logs"),
+        where("data", "==", lockData)
+      );
 
-      await updateDoc(logDocRef, {
-        failed: false,
-        userId: user.id,
-        userDisplayName: user.displayName,
+      const logSnapshot = await getDocs(q);
+
+      const batch = writeBatch(firestore);
+
+      logSnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
       });
+
+      await batch.commit();
 
       // @ts-ignore
       bottomSheetRef?.current?.close();

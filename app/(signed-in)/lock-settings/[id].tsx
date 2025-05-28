@@ -1,10 +1,12 @@
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { authContext } from "@/contexts/authContext";
 import { OrgUser } from "@/types";
 import {
   collection,
+  deleteDoc,
+  doc,
   getFirestore,
   onSnapshot,
   query,
@@ -12,7 +14,7 @@ import {
 } from "@react-native-firebase/firestore";
 import { useCurrentOrg } from "@/stores/orgsStore";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
-import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { faTrashAlt, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { useLocks } from "@/stores/locksStore";
 import AddMemberSheet from "@/components/AddMemberSheet";
@@ -74,6 +76,21 @@ const LockSettings = () => {
     [allowedUsers, orgUsers]
   );
 
+  const router = useRouter();
+
+  const deleteHandler = async () => {
+    if (!lock || !currentOrg) return;
+
+    try {
+      const lockRef = doc(firestore, "orgs", currentOrg.id, "locks", lock.id);
+      await deleteDoc(lockRef);
+
+      router.replace("/");
+    } catch (error) {
+      console.error("Error deleting lock:", error);
+    }
+  };
+
   if (!lock || !currentOrg) return null;
 
   return (
@@ -96,15 +113,24 @@ const LockSettings = () => {
           <Text className="text-3xl font-poppins-bold">{lock.name}</Text>
         </View>
         {orgUser?.role === "admin" && (
-          <TouchableOpacity
-            activeOpacity={0.8}
-            className="bg-indigo-500 text-white p-3 rounded-xl aspect-square shadow-md font-poppins-medium"
-            onPress={() => {
-              sheetRef.current?.present();
-            }}
-          >
-            <FontAwesomeIcon icon={faUserPlus} size={20} color="white" />
-          </TouchableOpacity>
+          <View className="flex-row gap-4">
+            <TouchableOpacity
+              activeOpacity={0.8}
+              className="bg-red-500 text-white p-3 rounded-xl aspect-square shadow-md font-poppins-medium"
+              onPress={deleteHandler}
+            >
+              <FontAwesomeIcon icon={faTrashAlt} size={20} color="white" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              className="bg-indigo-500 text-white p-3 rounded-xl aspect-square shadow-md font-poppins-medium"
+              onPress={() => {
+                sheetRef.current?.present();
+              }}
+            >
+              <FontAwesomeIcon icon={faUserPlus} size={20} color="white" />
+            </TouchableOpacity>
+          </View>
         )}
       </View>
       <View>

@@ -115,9 +115,7 @@ const FailedAttemptListItem = ({
     <Swipeable
       rightThreshold={50}
       leftThreshold={50}
-      renderRightActions={
-        user?.role === "admin" ? renderClearButton : () => <></>
-      }
+      renderRightActions={renderClearButton}
       renderLeftActions={renderClaimButton}
       containerStyle={{ overflow: "visible" }}
     >

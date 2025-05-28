@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Button } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { Link } from "expo-router";
 import LockListItem from "@/components/LockListItem";
 import HistoryListItem from "@/components/HistoryListItem";
@@ -12,11 +12,6 @@ import NoCurrentOrg from "@/components/NoCurrentOrg";
 import { useOrgUser } from "@/stores/orgUsersStore";
 import { useLogs } from "@/stores/logStore";
 import ClaimSheet, { ClaimSheetMethods } from "@/components/ClaimSheet";
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-  BottomSheetView,
-} from "@gorhom/bottom-sheet";
 
 const Stats = () => {
   const currentOrg = useCurrentOrg();
